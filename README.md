@@ -85,4 +85,3 @@ Im kostenlosen Paket schläft die Seite nach 15 Minuten ein; der erste Aufruf da
 - Die Auswertung ist rückblickend und ersetzt weder Biopsie noch ärztliche Beurteilung.
 
 Spezifikation: `docs/superpowers/specs/2026-10-10-ekg-abstossung-design.md`
-Übergabe und Zusammenfassung: `docs/UEBERGABE.md`

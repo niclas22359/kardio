@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Kardio Pitch v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1920px; height:1080px; overflow:hidden; background:#000; font-family:Inter,system-ui,sans-serif; color:#fff; }
+  canvas { position:absolute; inset:0; }
+  .scene { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; opacity:0; transition:opacity .6s ease; padding:0 160px; }
+  .scene.on { opacity:1; }
+  .k { font-size:22px; letter-spacing:.5em; text-transform:uppercase; color:#2ee6a6; margin-bottom:26px; font-weight:400; }
+  h1 { font-size:88px; font-weight:900; letter-spacing:-.02em; line-height:1.08; text-shadow:0 0 60px rgba(0,0,0,.9), 0 4px 30px rgba(0,0,0,.8); }
+  h1.red { color:#ff4d5e; }
+  .sub { margin-top:26px; font-size:34px; font-weight:300; color:#b9c3d9; letter-spacing:.02em; text-shadow:0 2px 20px rgba(0,0,0,.9); }
+  .rise { opacity:0; transform:translateY(26px); transition:all .9s cubic-bezier(.2,.8,.2,1); }
+  .scene.on .rise { opacity:1; transform:none; }
+  .d1{transition-delay:.3s}.d2{transition-delay:1.2s}.d3{transition-delay:2.2s}
+  .big { display:flex; gap:120px; margin-top:40px; }
+  .big div { text-align:center; }
+  .big .n { font-size:200px; font-weight:900; line-height:1; letter-spacing:-.04em; }
+  .big .l { font-size:28px; color:#b9c3d9; margin-top:10px; font-weight:300; }
+  .shot { margin-top:40px; width:1300px; border-radius:18px; overflow:hidden; box-shadow:0 0 0 1px rgba(255,255,255,.15), 0 40px 140px rgba(46,230,166,.18), 0 30px 90px rgba(0,0,0,.8); transform:perspective(1800px) rotateX(8deg) scale(.92); transition:transform 7s ease-out; }
+  .scene.on .shot { transform:perspective(1800px) rotateX(0deg) scale(1); }
+  .shot img { width:100%; display:block; }
+  .logo { font-size:170px; font-weight:900; letter-spacing:-.05em; }
+  .logo span { color:#ff4d5e; }
+  .flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+
+<section class="scene" data-t="8000" data-fx="stars">
+  <div class="k rise d1">Deutschland, jedes Jahr</div>
+  <h1 class="rise d2">400 Menschen bekommen<br>ein neues Herz.</h1>
+</section>
+
+<section class="scene" data-t="8000" data-fx="ecg">
+  <h1 class="rise d1">Bis zu jedes fünfte<br>wird <span style="color:#ff4d5e">abgestoßen</span>.</h1>
+  <div class="sub rise d2">Meist im ersten Jahr.</div>
+</section>
+
+<section class="scene" data-t="9000" data-fx="ring">
+  <h1 class="red rise d1">Die Biopsie sieht nur den Moment.</h1>
+  <div class="sub rise d2">7 bis 12 Eingriffe im ersten Jahr. Dazwischen: blind.</div>
+</section>
+
+<section class="scene" data-t="10200" data-fx="constellation">
+  <div class="k rise d1">Kardio</div>
+  <h1 class="rise d2">30 Sekunden am Tag.<br>Ein persönliches Normal.</h1>
+  <div class="sub rise d3">Apple Watch. Zu Hause. Elf EKG-Merkmale, jeder Patient sein eigener Maßstab.</div>
+</section>
+
+<section class="scene" data-t="10000" data-fx="drift">
+  <h1 class="rise d1">Driftet das EKG,<br>schlägt die Ampel an.</h1>
+  <div class="sub rise d2">Tage vor der Biopsie. Ohne Eingriff.</div>
+</section>
+
+<section class="scene" data-t="10000" data-fx="stars">
+  <h1 class="rise d1" style="font-size:64px">Zwei Tabellen. Ein Knopf. Eine Ampel pro Patient.</h1>
+  <div class="shot rise d2"><img src="shot_overview.png"></div>
+</section>
+
+<section class="scene" data-t="13700" data-fx="stars">
+  <div class="k rise d1">Geprüft an Patienten, die es nie gesehen hat</div>
+  <div class="big">
+    <div class="rise d2"><div class="n" style="color:#2ee6a6">0,97</div><div class="l">Trennschärfe mit Muster</div></div>
+    <div class="rise d3"><div class="n" style="color:#ffd166">0,52</div><div class="l">ohne Muster: nichts, wie es sein soll</div></div>
+  </div>
+  <div class="sub rise d3" style="font-size:26px;margin-top:50px">Demo-Daten. Die Maschine steht, jetzt braucht sie echte Befunde.</div>
+</section>
+
+<section class="scene" data-t="8000" data-fx="pulse">
+  <div class="logo rise d1">Kardi<span>o</span></div>
+  <div class="sub rise d2" style="font-size:40px">Das Herz hört man, bevor es laut wird.</div>
+</section>
+
+<div class="flash" id="flash"></div>
+
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const W=1920,H=1080;
+const stars=Array.from({length:420},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.3,p:Math.random()*6.28,s:Math.random()*.6+.2}));
+let fx='stars', fxStart=0, T0=0;
+function ecgY(x,amp){ // ein Herzschlag-Muster, periodisch
+  const p=(x%330)/330; let y=0;
+  if(p>.10&&p<.18) y=-Math.sin((p-.10)/.08*Math.PI)*14;             // P
+  if(p>.26&&p<.29) y=(p-.26)/.03*18;                                  // Q
+  if(p>=.29&&p<.33) y=18-(p-.29)/.04*(18+amp);                        // R auf
+  if(p>=.33&&p<.37) y=-amp+(p-.33)/.04*(amp+26);                      // R ab
+  if(p>=.37&&p<.40) y=26-(p-.37)/.03*26;                              // S
+  if(p>.52&&p<.66) y=-Math.sin((p-.52)/.14*Math.PI)*30;              // T
+  return y;
+}
+function drawStars(t,dim=1){
+  for(const s of stars){ const a=(.35+.65*Math.abs(Math.sin(t*s.s+s.p)))*dim; ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.28); ctx.fill(); }
+}
+function glowLine(pts,color,w){ ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=w; ctx.shadowColor=color; ctx.shadowBlur=28; ctx.lineJoin='round'; ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke(); ctx.restore(); }
+function frame(now){
+  const t=(now-T0)/1000, u=(now-fxStart)/1000;
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  // sanfter Nebel
+  const g=ctx.createRadialGradient(W/2,H/2,100,W/2,H/2,1100); g.addColorStop(0,'rgba(20,40,70,.35)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  drawStars(t);
+  const beat=Math.pow(Math.max(0,Math.sin(t*2*Math.PI))*1,8); // 60 bpm Puls
+  if(fx==='stars'||fx==='pulse'){
+    const r=160+beat*40, c=fx==='pulse'?'255,77,94':'46,230,166';
+    const gg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,r*3); gg.addColorStop(0,`rgba(${c},${.10+beat*.12})`); gg.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=gg; ctx.fillRect(0,0,W,H);
+  }
+  if(fx==='ecg'){
+    const len=Math.min(1,u/3.5)*W, pts=[]; for(let x=0;x<=len;x+=4) pts.push([x,H*.62+ecgY(x+u*40,120)]);
+    glowLine(pts,'#ff4d5e',5);
+  }
+  if(fx==='ring'){
+    for(let k=0;k<3;k++){ const ph=((u*.5+k/3)%1); const r=120+ph*520; ctx.save(); ctx.strokeStyle=`rgba(255,77,94,${(1-ph)*.9})`; ctx.lineWidth=6*(1-ph)+1; ctx.shadowColor='#ff4d5e'; ctx.shadowBlur=30; ctx.beginPath(); ctx.arc(W/2,H/2,r,0,6.28); ctx.stroke(); ctx.restore(); }
+    // einzelne Momentaufnahmen: Blitze
+    if(Math.floor(u*1.3)%4===0 && (u%0.77)<0.08){ ctx.fillStyle='rgba(255,255,255,.25)'; ctx.fillRect(0,0,W,H); }
+  }
+  if(fx==='constellation'||fx==='drift'){
+    // taegliche Messpunkte als Sternenkette, Normalband dahinter
+    const n=Math.min(60,Math.floor(u*9)), x0=200, dx=25, yb=H*.68;
+    ctx.fillStyle='rgba(46,230,166,.10)'; ctx.fillRect(x0-20,yb-70,dx*60+40,140);
+    const pts=[];
+    for(let i=0;i<n;i++){
+      const x=x0+i*dx; let y=yb+Math.sin(i*1.7)*22+Math.cos(i*.7)*14; let col='46,230,166', rr=5;
+      if(fx==='drift' && i>38){ const d=(i-38)/21; y-=d*d*260*Math.min(1,(u-1)/4); col=d>.45?'255,77,94':'255,209,102'; rr=5+d*4; }
+      pts.push([x,y]);
+      ctx.save(); ctx.shadowColor=`rgb(${col})`; ctx.shadowBlur=18; ctx.fillStyle=`rgb(${col})`; ctx.beginPath(); ctx.arc(x,y,rr,0,6.28); ctx.fill(); ctx.restore();
+    }
+    if(pts.length>1) glowLine(pts,'rgba(255,255,255,.35)',1.5);
+    if(fx==='drift' && u>4.5){ const a=Math.min(1,(u-4.5)/1.2); ctx.save(); ctx.shadowColor='#ff4d5e'; ctx.shadowBlur=60*a; ctx.strokeStyle=`rgba(255,77,94,${a})`; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(x0+56*dx,yb-200,70+beat*20,0,6.28); ctx.stroke(); ctx.restore(); }
+  }
+  requestAnimationFrame(frame);
+}
+const scenes=[...document.querySelectorAll('.scene')];
+const total=scenes.reduce((a,s)=>a+ +s.dataset.t,0);
+function show(k){ scenes.forEach(s=>s.classList.remove('on')); if(k<scenes.length){ const s=scenes[k]; s.classList.add('on'); fx=s.dataset.fx; fxStart=performance.now(); if(k===scenes.length-1){ const f=document.getElementById('flash'); f.style.transition='none'; f.style.opacity=.9; setTimeout(()=>{f.style.transition='opacity 1.2s'; f.style.opacity=0;},30); } setTimeout(()=>show(k+1), +s.dataset.t);} else document.body.dataset.done='1'; }
+window.totalMs=total;
+window.start=function(){ T0=performance.now(); fxStart=T0; requestAnimationFrame(frame); show(0); };
+</script>
+</body>
+</html>

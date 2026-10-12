@@ -1,0 +1,16 @@
+data/processed/
+data/demo/
+.venv/
+__pycache__/
+.env
+*.jsonl
+.claude-flow/
+.venv/
+.pytest_cache/
+tests/data/ecg_small.csv
+
+# Echte Patientendaten und Klinik-Unterlagen mit Patientenkuerzeln bleiben lokal
+data/raw/
+docs/referenz/
+docs/pitch/out/
+docs/pitch/debug.png

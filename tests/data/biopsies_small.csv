@@ -1,0 +1,5 @@
+Patient;Biopsie_Nr;Datum;Befund
+AA;1;2025-01-02;nein
+AA;2;2025-01-05;ja
+BB;1;2025-01-05;nein
+BB;2;2025-01-08;Zwischengruppe

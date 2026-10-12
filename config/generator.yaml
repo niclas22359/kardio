@@ -1,0 +1,23 @@
+n_patients: 40
+days: 365
+missing_day_rate: 0.10
+multi_measurement_rate: 0.15
+rejection_rate: 0.30
+borderline_rate: 0.15
+borderline_pattern_factor: 0.5
+pattern_enabled: true
+pattern_days_before: 10
+recovery_days: 14
+pattern:
+  R_amplitude_mean: -0.15
+  qRT_interval_mean: 0.08
+  R_rate_mean: 0.10
+  T_amplitude_mean: -0.20
+biopsy_schedule:
+  - {until_day: 28, every_days: 7}
+  - {until_day: 90, every_days: 14}
+  - {until_day: 180, every_days: 30}
+  - {until_day: 365, every_days: 90}
+followup_biopsies_after_rejection: 1
+followup_interval_days: 7
+seed: 42

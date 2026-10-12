@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Kardio Pitch-Video</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#060b18; --ink:#f3f6ff; --mute:#9aa7c7; --red:#ff3b5c; --green:#2ee6a6; --amber:#ffd166; --blue:#4da3ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); color:var(--ink); font-family:Inter,system-ui,sans-serif; }
+  #stage { position:relative; width:1920px; height:1080px; background:
+      radial-gradient(1200px 700px at 20% 10%, rgba(77,163,255,.18), transparent 60%),
+      radial-gradient(900px 600px at 85% 90%, rgba(255,59,92,.16), transparent 60%), var(--bg); }
+  .grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size:80px 80px; }
+  .scene { position:absolute; inset:0; opacity:0; transition:opacity .7s ease; display:flex; flex-direction:column; justify-content:center; padding:120px 160px; }
+  .scene.on { opacity:1; }
+  .kicker { font-size:28px; letter-spacing:.35em; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:28px; }
+  h1 { font-size:96px; font-weight:800; line-height:1.05; letter-spacing:-.02em; }
+  h2 { font-size:68px; font-weight:800; line-height:1.1; letter-spacing:-.02em; }
+  p.lead { font-size:40px; color:var(--mute); margin-top:34px; line-height:1.35; max-width:1400px; font-weight:300; }
+  .accent { color:var(--red); } .ok { color:var(--green); } .warn { color:var(--amber); } .b { color:var(--blue); }
+  .rise { opacity:0; transform:translateY(40px); transition:all .8s cubic-bezier(.2,.8,.2,1); }
+  .scene.on .rise { opacity:1; transform:none; }
+  .d1{transition-delay:.2s}.d2{transition-delay:.9s}.d3{transition-delay:1.6s}.d4{transition-delay:2.3s}.d5{transition-delay:3.0s}.d6{transition-delay:3.7s}
+  .stats { display:flex; gap:70px; margin-top:60px; margin-bottom:120px; }
+  .stat { flex:1; border-left:4px solid var(--red); padding-left:30px; }
+  .stat .n { white-space:nowrap; font-size:104px; font-weight:800; line-height:1; letter-spacing:-.03em; }
+  .stat .l { font-size:30px; color:var(--mute); margin-top:14px; line-height:1.3; }
+  .ecg { position:absolute; left:0; right:0; bottom:20px; height:220px; }
+  .ecg path { fill:none; stroke:var(--red); stroke-width:5; stroke-linecap:round; filter:drop-shadow(0 0 18px rgba(255,59,92,.8)); stroke-dasharray:6000; stroke-dashoffset:6000; }
+  .scene.on .ecg path { animation:draw 4.5s linear forwards; }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+  .flow { display:flex; align-items:center; gap:36px; margin-top:70px; }
+  .step { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:28px; padding:44px 40px; min-height:300px; }
+  .step .ic { font-size:72px; margin-bottom:22px; }
+  .step .t { font-size:36px; font-weight:600; line-height:1.2; }
+  .step .s { font-size:26px; color:var(--mute); margin-top:14px; line-height:1.35; }
+  .arrow { font-size:60px; color:var(--blue); }
+  .shot { position:absolute; right:100px; top:150px; width:1060px; border-radius:22px; overflow:hidden; box-shadow:0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.12); transform:scale(.96); transition:transform 9s linear; }
+  .scene.on .shot { transform:scale(1.03); }
+  .shot img { width:100%; display:block; }
+  .side { width:560px; }
+  .side h2 { font-size:58px; }
+  .side p.lead { font-size:32px; }
+  .light { display:inline-block; width:46px; height:46px; border-radius:50%; margin-right:18px; vertical-align:middle; box-shadow:0 0 30px currentColor; }
+  .proof { display:flex; gap:60px; margin-top:60px; }
+  .card { flex:1; border-radius:28px; padding:50px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); }
+  .card .big { font-size:150px; font-weight:800; line-height:1; letter-spacing:-.03em; }
+  .card .t { font-size:34px; margin-top:16px; font-weight:600; }
+  .card .s { font-size:26px; color:var(--mute); margin-top:12px; line-height:1.35; }
+  .bar { position:absolute; left:0; bottom:0; height:8px; background:linear-gradient(90deg,var(--blue),var(--red)); width:0; transition:width linear; }
+  .cap { position:absolute; left:160px; right:160px; bottom:60px; text-align:center; font-size:30px; color:var(--mute); }
+  .value-list { margin-top:60px; display:grid; grid-template-columns:1fr 1fr; gap:34px 70px; }
+  .value-list div { font-size:36px; line-height:1.3; padding-left:40px; position:relative; }
+  .value-list div::before { content:"▸"; position:absolute; left:0; color:var(--green); }
+  .logo { font-size:150px; font-weight:800; letter-spacing:-.04em; }
+  .logo span { color:var(--red); }
+  .next { margin-top:60px; display:flex; gap:40px; }
+  .next div { flex:1; font-size:32px; line-height:1.35; padding:34px; border-radius:22px; background:rgba(77,163,255,.1); border:1px solid rgba(77,163,255,.3); }
+  .next b { display:block; font-size:26px; color:var(--blue); letter-spacing:.2em; margin-bottom:12px; }
+  .warnbox { margin-top:50px; font-size:30px; color:var(--amber); border:1px solid rgba(255,209,102,.4); background:rgba(255,209,102,.08); padding:26px 34px; border-radius:18px; display:inline-block; }
+</style>
+</head>
+<body>
+<div id="stage">
+<div class="grid"></div>
+
+<!-- 1 Hook -->
+<section class="scene" data-t="12000">
+  <div class="kicker rise d1">Herztransplantation in Deutschland</div>
+  <h1 class="rise d2">Ein neues Herz.<br>Und dann beginnt das Warten.</h1>
+  <div class="stats">
+    <div class="stat rise d3"><div class="n">~400</div><div class="l">Herztransplantationen pro Jahr</div></div>
+    <div class="stat rise d4"><div class="n">bis 20 %</div><div class="l">Patienten erlebt im ersten Jahr eine Abstoßung</div></div>
+    <div class="stat rise d5"><div class="n">7 bis 12</div><div class="l">Biopsien im ersten Jahr, jede ein Eingriff am Herzen</div></div>
+  </div>
+  <svg class="ecg" viewBox="0 0 1920 260" preserveAspectRatio="none"><path d="M0 150 H260 l20 -10 l20 10 H420 l14 -90 l14 160 l14 -70 H640 l30 -30 l30 30 H900 l20 -10 l20 10 H1060 l14 -90 l14 160 l14 -70 H1280 l30 -30 l30 30 H1540 l20 -10 l20 10 H1700 l14 -90 l14 160 l14 -70 H1920"/></svg>
+</section>
+
+<!-- 2 Problem -->
+<section class="scene" data-t="13000">
+  <div class="kicker rise d1">Das Problem</div>
+  <h2 class="rise d2">Die Biopsie sieht nur den Moment.<br><span class="accent">Dazwischen ist die Klinik blind.</span></h2>
+  <p class="lead rise d3">Eine Abstoßung kündigt sich über Tage an. Entdeckt wird sie erst beim nächsten Kalendertermin, mit einem Katheter im Herzen. Zu spät, oder unnötig oft.</p>
+  <p class="lead rise d4">Was fehlt: ein Frühwarnsystem, das <span class="ok">jeden Tag</span> hinschaut, <span class="ok">ohne Eingriff</span>.</p>
+</section>
+
+<!-- 3 Idee -->
+<section class="scene" data-t="17000">
+  <div class="kicker rise d1">Die Idee</div>
+  <h2 class="rise d2">Das Herz hört man, bevor es laut wird.</h2>
+  <div class="flow">
+    <div class="step rise d3"><div class="ic">⌚</div><div class="t">30 Sekunden EKG täglich</div><div class="s">Apple Watch, zu Hause, kein Termin.</div></div>
+    <div class="arrow rise d3">→</div>
+    <div class="step rise d4"><div class="ic">🧬</div><div class="t">Persönliches Normal</div><div class="s">11 EKG-Merkmale: Amplituden, Dauern, Intervalle, Herzrate. Jeder Patient ist sein eigener Maßstab.</div></div>
+    <div class="arrow rise d4">→</div>
+    <div class="step rise d5"><div class="ic">📈</div><div class="t">Abweichung erkennen</div><div class="s">Driftet das EKG vom eigenen Normal weg, lernt das Modell: so sieht es vor einer Abstoßung aus.</div></div>
+    <div class="arrow rise d5">→</div>
+    <div class="step rise d6"><div class="ic">🚦</div><div class="t">Ampel pro Patient</div><div class="s">Grün, Gelb, Rot. Und ein Befundtext für den Arzt.</div></div>
+  </div>
+</section>
+
+<!-- 4 Produkt: Upload -->
+<section class="scene" data-t="10000">
+  <div class="side">
+    <div class="kicker rise d1">Kardio</div>
+    <h2 class="rise d2">Zwei Tabellen. Ein roter Knopf.</h2>
+    <p class="lead rise d3">EKG-Daten und Biopsiebefunde hochladen. Spaltennamen dürfen abweichen, das System ordnet sie zu.</p>
+  </div>
+  <div class="shot"><img src="shot_upload.png"></div>
+</section>
+
+<!-- 5 Produkt: Übersicht -->
+<section class="scene" data-t="9000">
+  <div class="side">
+    <div class="kicker rise d1">Übersicht</div>
+    <h2 class="rise d2"><span class="light" style="color:var(--red);background:var(--red)"></span>Wer braucht heute Aufmerksamkeit?</h2>
+    <p class="lead rise d3">Jeder Patient mit aktuellem Risiko. Sortiert nach Dringlichkeit.</p>
+  </div>
+  <div class="shot"><img src="shot_overview.png"></div>
+</section>
+
+<!-- 6 Produkt: Merkmale -->
+<section class="scene" data-t="13000">
+  <div class="side">
+    <div class="kicker rise d1">Merkmale</div>
+    <h2 class="rise d2">Die Auswertung, die Kardiologen kennen.</h2>
+    <p class="lead rise d3">Drei Befundgruppen, p-Werte, Trennschärfe. Automatisch statt in Handarbeit.</p>
+  </div>
+  <div class="shot"><img src="shot_features.png"></div>
+</section>
+
+<!-- 7 Produkt: Patient -->
+<section class="scene" data-t="12000">
+  <div class="side">
+    <div class="kicker rise d1">Patient</div>
+    <h2 class="rise d2">Das Risiko steigt, <span class="accent">Tage vor</span> der Biopsie.</h2>
+    <p class="lead rise d3">Verlauf, persönlicher Normalbereich, Biopsien als Marker, KI-Befundtext mit geprüften Zahlen.</p>
+  </div>
+  <div class="shot"><img src="shot_patient.png"></div>
+</section>
+
+<!-- 8 Nachweis -->
+<section class="scene" data-t="21000">
+  <div class="kicker rise d1">Funktioniert die Maschine?</div>
+  <h2 class="rise d2">Trainiert an 40 Patienten. Geprüft an 30 anderen.</h2>
+  <div class="proof">
+    <div class="card rise d3"><div class="big ok">0,97</div><div class="t">Trennschärfe am unabhängigen Datensatz</div><div class="s">86 % der Abstoßungen erkannt, 4 % Fehlalarme.</div></div>
+    <div class="card rise d4"><div class="big warn">0,52</div><div class="t">Gegenprobe ohne Muster</div><div class="s">Wo nichts drin ist, findet das System nichts. Kein Dauer-Alarm.</div></div>
+  </div>
+  <div class="warnbox rise d5">Erzeugte Demo-Daten mit eingebautem Muster. Beweist die Maschine, nicht die Medizin. Dafür brauchen wir echte Biopsiedaten.</div>
+</section>
+
+<!-- 9 Mehrwert -->
+<section class="scene" data-t="14000">
+  <div class="kicker rise d1">Was das bringt</div>
+  <h2 class="rise d2">Früher sehen. Gezielter handeln.</h2>
+  <div class="value-list">
+    <div class="rise d3"><b>Patient:</b> Warnung, bevor Symptome da sind. Therapie früher, Schaden kleiner.</div>
+    <div class="rise d3"><b>Arzt:</b> eine Ampel pro Patient statt Datenberge. Ein Befundtext mit geprüften Zahlen.</div>
+    <div class="rise d4"><b>Klinik:</b> Biopsien nach Risiko statt nach Kalender. Weniger Eingriffe, weniger Kosten.</div>
+    <div class="rise d4"><b>Alltag:</b> 30 Sekunden am Handgelenk. Die Daten fließen, die Ampel aktualisiert sich.</div>
+  </div>
+</section>
+
+<!-- 10 Nächste Schritte -->
+<section class="scene" data-t="11000">
+  <div class="kicker rise d1">Was jetzt kommt</div>
+  <h2 class="rise d2">Die Maschine steht. Jetzt braucht sie echte Daten.</h2>
+  <div class="next">
+    <div class="rise d3"><b>SCHRITT 1</b>Echte Biopsiebefunde einspielen. Das System ist dafür gebaut.</div>
+    <div class="rise d4"><b>SCHRITT 2</b>Validierung an unabhängigen Patienten, Schwellen mit Kardiologen festlegen.</div>
+    <div class="rise d5"><b>SCHRITT 3</b>Pilot in einem Transplantationszentrum, Daten direkt von der Watch.</div>
+  </div>
+</section>
+
+<!-- 11 Outro -->
+<section class="scene" data-t="7000" style="align-items:center;text-align:center">
+  <div class="logo rise d1">Kardi<span>o</span></div>
+  <p class="lead rise d2" style="text-align:center">Das Herz hört man, bevor es laut wird.</p>
+  <p class="lead rise d3" style="text-align:center;font-size:30px;margin-top:60px">Gebaut an einem Tag. Hackathon 2026.</p>
+</section>
+
+<div class="bar" id="bar"></div>
+</div>
+<script>
+  const scenes=[...document.querySelectorAll('.scene')];
+  const total=scenes.reduce((a,s)=>a+ +s.dataset.t,0);
+  const bar=document.getElementById('bar');
+  let i=0;
+  function show(k){ scenes.forEach(s=>s.classList.remove('on')); if(k<scenes.length){ scenes[k].classList.add('on'); setTimeout(()=>show(k+1), +scenes[k].dataset.t);} else { document.body.dataset.done='1'; } }
+  window.start=function(){ bar.style.transition=`width ${total}ms linear`; requestAnimationFrame(()=>bar.style.width='100%'); show(0); };
+  window.totalMs=total;
+</script>
+</body>
+</html>

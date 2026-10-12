@@ -1,0 +1,13 @@
+window_days: 14
+baseline_days: 0        # 0 = alle stabilen Tage des Patienten; >0 = nur die ersten N
+baseline_exclude_rejection: false   # false = Normallinie kennt die Befunde nicht (empfohlen)
+baseline_min_days: 5
+min_window_data_days: 3
+treatment_days: 21
+min_windows_total: 20
+min_rejection_windows: 8
+min_rejection_windows_stats: 5
+amber_threshold: 0.30
+red_threshold: 0.60
+z_alert: 2.0
+seed: 42

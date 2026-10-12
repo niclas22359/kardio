@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: kardio-ekg
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app/main.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: MGA_BASE_URL
+        value: https://chat.int.bayer.com/api/v2
+      - key: MGA_MODEL
+        value: claude-sonnet-5
+      - key: MGA_API_KEY
+        sync: false          # wird im Render-Dashboard eingetragen, nie im Repo
+      - key: APP_PASSWORD
+        sync: false
